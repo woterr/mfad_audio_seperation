@@ -1,3 +1,5 @@
+"""The small web server that serves the page and does the maths."""
+
 import argparse
 from pathlib import Path
 
@@ -14,30 +16,36 @@ app = Flask(__name__, static_folder=None)
 
 @app.get("/")
 def page():
+    # the main page
     return (STATIC / "index.html").read_text(encoding="utf-8")
 
 
 @app.get("/static/<name>")
 def static_file(name):
+    # the css and js files
     return send_from_directory(STATIC, name)
 
 
 @app.get("/api/sources")
 def api_sources():
+    # the two originals
     return reply(pipeline.sources)
 
 
 @app.post("/api/run")
 def api_run():
+    # does the whole experiment
     return reply(pipeline.run)
 
 
 @app.get("/audio/<name>")
 def audio_file(name):
+    # lets the browser play the wav files
     return send_from_directory(audio.FOLDER, name, max_age=0)
 
 
 def reply(fn):
+    # run the thing, and turn a missing file into a message not a crash
     try:
         return jsonify(fn())
     except AudioError as err:
@@ -50,6 +58,7 @@ if __name__ == "__main__":
     parser.add_argument("--port", type=int, default=5000)
     args = parser.parse_args()
 
+    # check the recordings are there before we start
     try:
         pipeline.sources()
     except AudioError as err:
