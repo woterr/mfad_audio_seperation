@@ -2,7 +2,3 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-
-# written on each run
-separation/mic*.wav
-separation/recovered_*.wav
