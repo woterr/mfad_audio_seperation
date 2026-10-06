@@ -1,18 +1,13 @@
-"""Loads the two recordings, mixes them, and pulls them back apart."""
-
 import numpy as np
 
 from . import audio, linear_algebra as la
 
-# the two files we start with, speech on top
 NAMES = ("speech", "piano")
 
 
 def sources():
-    # just the two originals, nothing has been run yet
-    S = load()
+    S = load() # from audio.py
 
-    # send the page the label, the link and the shape of each one
     return {
         "rate": audio.RATE,
         "duration": S.shape[1] / audio.RATE,
@@ -24,26 +19,29 @@ def sources():
 
 
 def run():
-    # start with the two sources, 2 x N
-    S = load()
+    S = load() # from audio.py
 
-    # X = A S gives us the three microphones, 3 x N
-    X = la.mix(la.A, S)
+    X = la.mix(la.A, S) # microphone reading
 
-    # build A+ from the SVD, then Shat = A+ X brings the sources back, 2 x N
-    S_hat = la.recover(la.factorise(la.A), X)
+    noise = np.random.normal(0, 0.01, X.shape) # ADD NOISE
+    X = X + noise
 
+    A_plus = la.factorise(la.A) # psuedo inverse
+    S_hat = la.recover(A_plus, X) # recovered source
+
+    error = la.leftover(la.A, S_hat, X) # leftover error
 
 
     # one scale factor for everything so nothing clips
     # using the same one everywhere means A Shat = X still holds
+
     loudest = max(float(np.abs(X).max()), float(np.abs(S_hat).max()))
     gain = audio.OUT_PEAK / loudest if loudest > audio.OUT_PEAK else 1.0
 
     return {
         "rate": audio.RATE,
         "duration": S.shape[1] / audio.RATE,
-        "error": la.leftover(la.A, S_hat, X),
+        "error": error,
         "microphones": emit([(f"mic{i + 1}", f"Microphone {i + 1}", X[i] * gain) for i in range(3)]),
         "recovered": emit([(f"recovered_{n}", f"Recovered {n}", S_hat[i] * gain)
                            for i, n in enumerate(NAMES)]),

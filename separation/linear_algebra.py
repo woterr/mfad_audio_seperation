@@ -11,38 +11,26 @@ A = np.array([
 
 
 def factorise(A):
-    # numpy splits A into three parts: A = U Sigma Vt
-    U, sigma, Vt = np.linalg.svd(A)
+    U, sigma, Vt = np.linalg.svd(A) # A = U Sigma Vt
 
-    # A is 3x2 so m is 3 and n is 2
-    m, n = A.shape
+    m, n = A.shape # m = 3, n = 2
     i = np.arange(n)
 
-    # sigma+ is 2x3, the values go down the diagonal upside down
-    Sigma_plus = np.zeros((n, m))
-    Sigma_plus[i, i] = 1.0 / sigma
+    Sigma_plus = np.zeros((n, m)) # null matrix
+    Sigma_plus[i, i] = 1.0 / sigma # sigma becomes 1/sigma and dimension = 2x3
 
-
-    # put the three parts back together in the right order
-    return Vt.T @ Sigma_plus @ U.T
+    return Vt.T @ Sigma_plus @ U.T # A+ (pesudoinv)
 
 
 def mix(A, S):
 
-    # X = A S, this makes the three microphones
-    return A @ S
+    return A @ S # A * S
 
 
 
 def recover(A_plus, X):
-    # S^ = A+ X, this pulls the sources back out
-    return A_plus @ X
+    return A_plus @ X # S^
 
 
 def leftover(A, S_hat, X):
-
-
-
-    # work out E = X - A S^, the part we couldnt explain
-    # then take the square root of all the squares added up
-    return float(np.sqrt(((X - A @ S_hat) ** 2).sum()))
+    return float(np.sqrt(((X - A @ S_hat) ** 2).sum())) # E = X - A S^: forbenius norm
