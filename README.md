@@ -35,7 +35,20 @@ To recover $S$ from $X$, we construct the pseudoinverse $A^+$ explicitly:
 1. Compute the reciprocal of all non-zero singular values in $\Sigma$.
 2. Transpose the dimensions to obtain $\Sigma^+ \in \mathbb{R}^{2 \times 3}$:
 
-$$\Sigma^+ = \begin{bmatrix} 1/\sigma_1 & 0 & 0 \\ 0 & 1/\sigma_2 & 0 \end{bmatrix}$$
+```
+Σ =
+
+[σ₁  0
+ 0   σ₂
+ 0   0]
+```
+
+```
+Σ⁺ =
+
+[1/σ₁   0    0
+ 0     1/σ₂  0]
+```
 
 For the above mixing matrix, the pseudoinverse matrix is:
 ```
