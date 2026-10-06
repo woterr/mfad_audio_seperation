@@ -2,8 +2,6 @@
 # Audio Source Separation Using Linear Algebra
 
 
----
-
 ## Core Mathematical Concepts
 
 The project emphasizes explicit matrix operations over black-box digital signal processing libraries.
@@ -32,12 +30,32 @@ Where:
 * $\Sigma \in \mathbb{R}^{3 \times 2}$ is a rectangular diagonal matrix containing singular values $\sigma_1, \sigma_2$.
 * $V^T \in \mathbb{R}^{2 \times 2}$ is orthogonal (right singular vectors transposed).
 
-### 4. Moore-Penrose Pseudoinverse Construction
+### 4. Pseudoinverse Construction
 To recover $S$ from $X$, we construct the pseudoinverse $A^+$ explicitly:
 1. Compute the reciprocal of all non-zero singular values in $\Sigma$.
 2. Transpose the dimensions to obtain $\Sigma^+ \in \mathbb{R}^{2 \times 3}$:
 
-$$\Sigma^+ = \begin{bmatrix} 1/\sigma_1 & 0 & 0 \\ 0 & 1/\sigma_2 & 0 \end{bmatrix}$$
+```
+Σ =
+
+[σ₁  0
+ 0   σ₂
+ 0   0]
+```
+
+```
+Σ⁺ =
+
+[1/σ₁   0    0
+ 0     1/σ₂  0]
+```
+
+For the above mixing matrix, the pseudoinverse matrix is:
+```
+A⁺ =
+[ 1.1019   -0.4909    0.4429 ]
+[-0.5495    1.1440    0.1606 ]
+```
 
 3. Compute the pseudoinverse $A^+ \in \mathbb{R}^{2 \times 3}$:
 
