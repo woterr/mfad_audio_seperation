@@ -23,7 +23,7 @@ def run():
 
     X = la.mix(la.A, S) # microphone reading
 
-    noise = np.random.normal(0, 0.01, X.shape) # ADD NOISE
+    noise = np.random.normal(0, 0.001, X.shape) # ADD NOISE
     X = X + noise
 
     A_plus = la.factorise(la.A) # psuedo inverse
