@@ -12,7 +12,7 @@ RATE = 22050 # we use one sample rate for everything
 
 PEAK = 0.5 # sources sit at half volume so higher vol music isnt overridding lower vol music
 
-OUT_PEAK = 0.95 # never write anything louder than this
+OUT_PEAK = 0.95 # never write anything louder than this (prevent clipping)
 
 
 

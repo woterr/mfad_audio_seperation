@@ -43,27 +43,63 @@ Simulating the Recording (Mixing)
     # X = A S, this makes the three microphones
     return A @ S
 ```
-Explanation: A is the 3×2 mixing matrix and S is the 2×N source matrix containing the original speech and piano signals. The matrix multiplication A @ S yields $X$, a 3×N matrix representing the audio captured by the 3 microphones.```
+Explanation: A is the 3×2 mixing matrix and S is the 2×N source matrix containing the original speech and piano signals. The matrix multiplication `A @ S` yields the clean microphone matrix $X_{\text{clean}} \in \mathbb{R}^{3 \times N}$: each row is one microphone hearing both sources at its own gain. This is the ideal result, before any noise is introduced.```
 Recovering the Sources
 ```**def recover(A_plus, X):
     # S^ = A+ X, this pulls the sources back out
     return A_plus @ X**
 ```
-Explanation: A_plus is the 2×3 pseudoinverse matrix $A^+$, and X is the 3×N mixed microphone matrix. Multiplying $A^+ X$ reverses the linear combination, outputting $\hat{S}$—a 2×N matrix containing the estimated, separated original signals.```
+Explanation: A_plus is the 2×3 pseudoinverse matrix $A^+$, and X is the 3×N noisy microphone matrix. Multiplying $A^+ X$ reverses the linear combination, outputting $\hat{S}$—a 2×N matrix containing the estimated, separated signals.
+
+Note that X here is the *noisy* matrix. In the clean case the system $AS = X$ is consistent and $A^+$ inverts the mixing exactly. With noise there is generally no matrix satisfying $AS = X$ exactly, so $A^+ X$ is instead the least squares estimate: the $\hat{S}$ that minimises $\lVert A S - X \rVert_F^2$. That minimising property is a property of the pseudoinverse itself, which is why it does not need to be called explicitly.```
 Calculating Reconstruction Error
 ```def leftover(A, S_hat, X):
     # work out E = X - A S^, the part we couldnt explain
     # then take the square root of all the squares added up
     return float(np.sqrt(((X - A @ S_hat) ** 2).sum()))
 ```
-Explanation: Validates the mathematical accuracy of the recovery by calculating the Frobenius norm of the residual error matrix. A @ S_hat simulates re-mixing the recovered sources. X - A @ S_hat calculates the error matrix $E$. The function squares every element, sums them, and takes the square root ($\Vert{}E\Vert{}_F$).```
+Explanation: Validates the recovery by calculating the Frobenius norm of the residual error matrix. `A @ S_hat` re-mixes the recovered sources, so `X - A @ S_hat` is the residual $E = X - A\hat{S}$. The function squares every element, sums them, and takes the square root ($\lVert E \rVert_F$).
+
+Because X contains noise, this value is small but nonzero—around 5.5 in practice. It measures how closely the recovered sources can reproduce the noisy microphone observations. In the clean noiseless case it would be approximately $1 \times 10^{-14}$, which is only floating point rounding. The residual is orthogonal to the column space of $A$, so it represents exactly the part of the noise that no choice of $\hat{S}$ could have explained.```
 
 
-audio.py
+## 2. `audio.py`
 
-Handles audio signal preparation and file I/O operations to ensure the linear algebra pipeline receives perfectly formatted data.load_and_preprocess_audio(filepath):Reads WAV files using scipy.io.wavfile. It automatically converts multi-channel (stereo) audio to mono by averaging the channels. It also converts integer PCM formats into floating-point representation, normalizing amplitudes between $[-1.0, 1.0]$ so the matrix math operates on standard mathematical scales.align_signals(signal1, signal2):Matrix addition and multiplication require dimensions to match exactly. This function ensures both audio signals have the exact same length $N$ by padding shorter signals with zeros or trimming longer ones.save_wav(filepath, sample_rate, data):Normalizes peak amplitudes safely to avoid digital clipping before converting the floating-point arrays back into 16-bit PCM WAV files and saving them to disk.
+Handles audio signal preparation and file I/O so the linear algebra pipeline receives consistently formatted data. It contains no noise: the noise in this project is added later, in `pipeline.py`, so that it clearly belongs to the microphones rather than to the source recordings.
 
-pipeline.py
+**load(name):** Reads a WAV file using `scipy.io.wavfile`. Multi-channel (stereo) audio is averaged down to mono by taking the mean across channels. Integer PCM samples are converted to floating point and scaled by $1/32768$ so amplitudes lie in $[-1.0, 1.0]$. If the file's sample rate differs from the project rate of 22050 Hz, it is resampled with `resample_poly` so both sources share one rate. Finally the signal is scaled so its loudest sample sits at 0.5, which keeps the piano from overwhelming the speech once mixed and leaves headroom so nothing clips.
 
-The orchestration script that acts as the bridge between the audio files, the math, and the web server.Initialization: Calls audio.py to load speech.wav and piano.wav, match sample rates, and align their lengths to construct the source matrix $S \in \mathbb{R}^{2 \times N}$.Mixing: Passes $S$ and the predefined mixing matrix $A$ to linear_algebra.mix_sources(), computing the mixed matrix $X \in \mathbb{R}^{3 \times N}$. It then saves mic1.wav, mic2.wav, and mic3.wav to disk.Decomposition: Passes $A$ to linear_algebra.compute_svd_pinv() to explicitly derive $U$, $\Sigma$, $V^T$, and the pseudoinverse $A^+$.Recovery: Computes the recovered source matrix $\hat{S}$ and saves recovered_speech.wav and recovered_piano.wav.Data Packaging: Calculates the reconstruction error and downsamples the high-resolution audio waveforms into small arrays suitable for rendering in the browser. It packages all matrices, dimensions, and visual data into a JSON-friendly dictionary.
+**save(name, signal):** Writes a mono 16-bit PCM WAV file. Before writing, the signal is scaled down if it would exceed a peak of 0.95, and samples are clipped into $[-1.0, 1.0]$. This scaling applies only to the files written to disk; it does not affect the matrices used in the calculation.
 
+**envelope(signal, buckets=900):** Reduces a full-resolution signal to 900 (min, max) pairs using `np.minimum.reduceat` and `np.maximum.reduceat`. The browser receives this compact array instead of the hundreds of thousands of individual samples, which is enough to draw the waveform shape.
+
+## 3. `pipeline.py`
+
+The orchestration script that acts as the bridge between the audio files, the mathematics, and the web server. It runs in the following order.
+
+### The Pipeline, Step by Step
+
+**1. Load the source signals.**
+**2. Build S**
+**3. Mix, using X = AS.**
+**4. Add small Gaussian microphone noise.** (to demonstrate practicality)
+**5. Compute A⁺.**
+**6. Recover Ŝ = A⁺X.**
+**7. Calculate the reconstruction residual.**
+**8. Apply a shared output gain.**1
+**9. Save the microphone and recovered audio.**
+
+
+---
+
+## 4. `app.py`
+
+A small Flask server with four routes:
+
+- `GET /` returns `static/index.html`.
+- `GET /static/<name>` serves the CSS and JavaScript.
+- `GET /api/sources` calls `pipeline.sources()` so the page can show the two originals before anything is run.
+- `POST /api/run` calls `pipeline.run()`, which performs the whole experiment and returns the microphone signals, the recovered signals, and the residual as JSON.
+- `GET /audio/<name>` serves any `.wav` file from the `separation/` folder, which covers both the two original recordings and the five generated ones.
+
+The server is started directly with `python app.py`, defaulting to `127.0.0.1:5000`, with `--host` and `--port` available as options.
