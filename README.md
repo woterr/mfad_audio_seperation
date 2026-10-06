@@ -1,9 +1,6 @@
 
 # Audio Source Separation Using Linear Algebra
 
-An academic demonstration project illustrating how fundamental linear algebra concepts—specifically **Singular Value Decomposition (SVD)** and the **Moore-Penrose Pseudoinverse**—can be applied to solve the blind source separation problem.
-
-This application takes two independent mono audio signals (speech and piano music), mixes them into three virtual microphone recordings using a known 3×2 linear mixing matrix, and then mathematically recovers the original source signals from the mixed recordings.
 
 ---
 
