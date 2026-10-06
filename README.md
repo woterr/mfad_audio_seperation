@@ -1,12 +1,11 @@
-# mfad_audio_seperation
 
-cd /mnt/shared/Projects/audio_seperation
-
-.venv/bin/python app.py
 # Audio Source Separation Using Linear Algebra
+
+An academic demonstration project illustrating how fundamental linear algebra concepts—specifically **Singular Value Decomposition (SVD)** and the **Moore-Penrose Pseudoinverse**—can be applied to solve the blind source separation problem.
 
 This application takes two independent mono audio signals (speech and piano music), mixes them into three virtual microphone recordings using a known 3×2 linear mixing matrix, and then mathematically recovers the original source signals from the mixed recordings.
 
+---
 
 ## Core Mathematical Concepts
 
@@ -60,17 +59,19 @@ $$E = X - A \hat{S}$$
 
 ## Audio Files (`.wav` Files)
 
-The project relies on local `.wav` files stored in the repository.
+The project relies on local `.wav` files stored in the repository. You can play the audio directly below.
 
-| File Name | Matrix Representation | Role & Description |
-| :--- | :--- | :--- |
-| `speech.wav` | $S[0, :]$ | Clean original speech recording (Source 1). |
-| `piano.wav` | $S[1, :]$ | Clean original piano music recording (Source 2). |
-| `mic1.wav` | $X[0, :]$ | Microphone 1 recording: $0.8 \cdot \text{speech} + 0.2 \cdot \text{piano}$. |
-| `mic2.wav` | $X[1, :]$ | Microphone 2 recording: $0.3 \cdot \text{speech} + 0.9 \cdot \text{piano}$. |
-| `mic3.wav` | $X[2, :]$ | Microphone 3 recording: $0.6 \cdot \text{speech} + 0.5 \cdot \text{piano}$. |
-| `recovered_speech.wav` | $\hat{S}[0, :]$ | Reconstructed speech audio extracted via $A^+ X$. |
-| `recovered_piano.wav` | $\hat{S}[1, :]$ | Reconstructed piano audio extracted via $A^+ X$. |
+*(Note: If the audio player does not render in your markdown viewer, you can click the file names to view them directly).*
+
+| File Name | Play Audio | Matrix Representation | Role & Description |
+| :--- | :--- | :--- | :--- |
+| `speech.wav` | <audio controls src="https://raw.githubusercontent.com/woterr/mfad_audio_seperation/main/speech.wav"></audio> | $S[0, :]$ | Clean original speech recording (Source 1). |
+| `piano.wav` | <audio controls src="https://raw.githubusercontent.com/woterr/mfad_audio_seperation/main/piano.wav"></audio> | $S[1, :]$ | Clean original piano music recording (Source 2). |
+| `mic1.wav` | <audio controls src="https://raw.githubusercontent.com/woterr/mfad_audio_seperation/main/mic1.wav"></audio> | $X[0, :]$ | Microphone 1: $0.8 \cdot \text{speech} + 0.2 \cdot \text{piano}$. |
+| `mic2.wav` | <audio controls src="https://raw.githubusercontent.com/woterr/mfad_audio_seperation/main/mic2.wav"></audio> | $X[1, :]$ | Microphone 2: $0.3 \cdot \text{speech} + 0.9 \cdot \text{piano}$. |
+| `mic3.wav` | <audio controls src="https://raw.githubusercontent.com/woterr/mfad_audio_seperation/main/mic3.wav"></audio> | $X[2, :]$ | Microphone 3: $0.6 \cdot \text{speech} + 0.5 \cdot \text{piano}$. |
+| `recovered_speech.wav` | <audio controls src="https://raw.githubusercontent.com/woterr/mfad_audio_seperation/main/recovered_speech.wav"></audio> | $\hat{S}[0, :]$ | Reconstructed speech audio extracted via $A^+ X$. |
+| `recovered_piano.wav` | <audio controls src="https://raw.githubusercontent.com/woterr/mfad_audio_seperation/main/recovered_piano.wav"></audio> | $\hat{S}[1, :]$ | Reconstructed piano audio extracted via $A^+ X$. |
 
 ---
 
@@ -90,4 +91,4 @@ The project relies on local `.wav` files stored in the repository.
  ├── recovered_speech.wav  # Output Recovered Source 1
  ├── recovered_piano.wav   # Output Recovered Source 2
  ├── static/               # Frontend HTML, CSS, and Vanilla JS
- └── requirements.txt      # Project dependencies (NumPy, SciPy, Flask)```
+ └── requirements.txt      # Project dependencies (NumPy, SciPy, Flask)
