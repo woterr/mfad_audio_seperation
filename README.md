@@ -87,5 +87,6 @@ The project relies on local `.wav` files stored in the repository. You can play 
  ├── mic3.wav              # Generated Microphone 3
  ├── recovered_speech.wav  # Output Recovered Source 1
  ├── recovered_piano.wav   # Output Recovered Source 2
- ├── static/               # Frontend HTML, CSS, and Vanilla JS
- └── requirements.txt      # Project dependencies (NumPy, SciPy, Flask)
+
+static/               # Frontend HTML, CSS, and Vanilla JS
+requirements.txt      # Project dependencies (NumPy, SciPy, Flask)
