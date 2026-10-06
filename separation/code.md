@@ -17,7 +17,7 @@ A = np.array([
     [0.3, 0.9],
     [0.6, 0.5],
 ])
-```Explanation: This establishes the acoustic properties of our virtual room. It is a 3×2 matrix, meaning there are 3 microphones (rows) and 2 audio sources (columns). The values represent the volume (amplitude) at which each source is picked up by each microphone.```
+```text Explanation: This establishes the acoustic properties of our virtual room. It is a 3×2 matrix, meaning there are 3 microphones (rows) and 2 audio sources (columns). The values represent the volume (amplitude) at which each source is picked up by each microphone.```
 Computing the Pseudoinverse
 def factorise(A):
     # numpy splits A into three parts: A = U Sigma Vt
