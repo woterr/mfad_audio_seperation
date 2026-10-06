@@ -23,11 +23,11 @@ def run():
 
     X = la.mix(la.A, S) # microphone reading
 
-    noise = np.random.normal(0, 0.001, X.shape) # ADD NOISE
+    noise = np.random.normal(0, 0.0003, X.shape) # ADD NOISE
     X = X + noise
 
     A_plus = la.factorise(la.A) # psuedo inverse
-    S_hat = la.recover(A_plus, X) # recovered source
+    S_hat = la.recover(A_plus, X) # recovered source, least squares
 
     error = la.leftover(la.A, S_hat, X) # leftover error
 
