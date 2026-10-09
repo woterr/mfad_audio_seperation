@@ -1,5 +1,6 @@
 
 # Audio Source Separation Using Linear Algebra
+<img width="1295" height="1051" alt="image" src="https://github.com/user-attachments/assets/43cf8dcc-9d2d-4032-b250-c0c2ad72af65" />
 
 
 ## Core Mathematical Concepts
