@@ -14,10 +14,15 @@ def factorise(A):
     U, sigma, Vt = np.linalg.svd(A) # A = U Sigma Vt
 
     m, n = A.shape # m = 3, n = 2
-    i = np.arange(n)
+    i = np.arange(n) # [1, 2]
 
     Sigma_plus = np.zeros((n, m)) # null matrix
-    Sigma_plus[i, i] = 1.0 / sigma # sigma becomes 1/sigma and dimension = 2x3
+
+
+    # fallback if all rows are same in mixing matrix
+    # invert only reliable singular values, keep the rest as is
+    keep = sigma > 1e-12 * sigma.max()
+    Sigma_plus[i[keep], i[keep]] = 1.0 / sigma[keep]
 
     return Vt.T @ Sigma_plus @ U.T # A+ (pesudoinv)
 

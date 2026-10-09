@@ -6,7 +6,7 @@ NAMES = ("speech", "piano")
 
 
 def sources():
-    S = load() # from audio.py
+    S = load()
 
     return {
         "rate": audio.RATE,
@@ -19,7 +19,7 @@ def sources():
 
 
 def run():
-    S = load() # from audio.py
+    S = load()
 
     X = la.mix(la.A, S) # microphone reading
 
@@ -52,17 +52,14 @@ def load():
     length = min(row.size for row in rows)
 
 
-    # cut the long one down and add zeros to the short one
-    rows = [np.pad(row[:length], (0, max(0, length - row.size))) for row in rows]
+    # cut the long one down
+    rows = [row[:length] for row in rows]
 
     # stack them on top of each other, this is S: 2 x N
     return np.vstack(rows).astype(np.float64)
 
 
 def emit(items):
-
-
-
     # save each one as a wav, then tell the page about it
     out = []
     for name, label, data in items:

@@ -19,7 +19,7 @@ OUT_PEAK = 0.95 # never write anything louder than this (prevent clipping)
 def load(name):
     path = FOLDER / name
 
-    # read the wav, this gives us the rate and the numbers
+    # read the wav
     rate, data = wavfile.read(path)
 
     # if its stereo then average the two sides into one mono channel
@@ -59,6 +59,7 @@ def save(name, signal):
         out.writeframes(data.tobytes())
 
 
+# for web UI, reduce number of samples
 def envelope(signal, buckets=900):
 
     # split the signal into 900 bits
